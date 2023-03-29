@@ -20,7 +20,7 @@ class FederatedLearningOrchestrator:
                 - McMahan et. al.)
             E -> Number of Epochs of training in each round of FL
             B -> Batch Size of the local training in client device    
-
+            R -> R is the number of rounds of training
     '''
     dataset_element_spec = None
     def __init__(self):
@@ -50,14 +50,18 @@ class FederatedLearningOrchestrator:
         if dataset is not None:
             self.dataset = dataset
 
+        self.is_G_intialized = False
         if G is not None:
             if grouped_clients is not None:
                 self.G = G
                 self.grouped_clients = grouped_clients
+                self.is_G_intialized = True
             else:
                 print("grouped_clients argument missing, " +
                 "hence skipping G initialization. G should be " +
                 "initialized only with grouped_clients")
+
+        
 
     def modelDetailsSetter(self, model_fn_id = "keras_dnn_mnist_simple"):
         is_valid_input = True
@@ -132,11 +136,15 @@ class FederatedLearningOrchestrator:
 
         print("Step 3: Validating client group for Federated Training...")
         sample_clients = []
-        for client_id in self.grouped_clients:
-            if client_id not in self.data_train.client_ids:
-                print("Client {} not in training data hence skipping...")
-            else:
-                sample_clients.append(client_id)
+        if self.is_G_intialized:
+            for client_id in self.grouped_clients:
+                if client_id not in self.data_train.client_ids:
+                    print("Client {} not in training data hence skipping...")
+                else:
+                    sample_clients.append(client_id)
+        else:
+            sample_clients = self.data_train.client_ids
+        
         print("Updating Grouped Clients Attributes...")
         self.grouped_clients = sample_clients
         self.G = len(self.grouped_clients)
