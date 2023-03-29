@@ -153,7 +153,7 @@ class FederatedLearningOrchestrator:
         self.federated_train_data = self.make_federated_data(self.data_train, 
                                                         self.grouped_clients)
         FederatedLearningOrchestrator.dataset_element_spec = \
-                                    self.federated_train_data.element_spec
+                                    self.federated_train_data[0].element_spec
 
         print("Step 5: Setting up training model and parameters...")
         if self.model_id == "keras_dnn_mnist_simple" and self.agg_algo == "fedAvg":
