@@ -30,6 +30,7 @@ class FederatedLearningOrchestrator:
         self.B = None        
         self.grouped_clients = []
         self.dataset = None
+        self.client_count = None
 
     def scenarioSetter(self, C, E, B, R, G=None, grouped_clients=None,
                         dataset="emnist", shuffle_buffer=100, prefetch_buffer=10,
@@ -62,6 +63,9 @@ class FederatedLearningOrchestrator:
                 "initialized only with grouped_clients")
 
         
+    def clientCountSetter(self, client_count, seed = 42):
+        self.client_count = client_count
+        self.client_init_seed = seed
 
     def modelDetailsSetter(self, model_fn_id = "keras_dnn_mnist_simple"):
         is_valid_input = True
@@ -146,8 +150,13 @@ class FederatedLearningOrchestrator:
             sample_clients = self.data_train.client_ids
         
         print("Updating Grouped Clients Attributes...")
-        self.grouped_clients = sample_clients
-        self.G = len(self.grouped_clients)
+        if self.client_count != None:
+            random.seed(self.client_init_seed)
+            self.grouped_clients = random.sample(sample_clients, self.client_count)
+            self.G = self.client_count
+        else:
+            self.grouped_clients = sample_clients
+            self.G = len(self.grouped_clients)
 
         print("Step 4: Creating Federated train data...")
         self.federated_train_data = self.make_federated_data(self.data_train, 
@@ -164,21 +173,26 @@ class FederatedLearningOrchestrator:
             self.train_state = self.iterative_process.initialize()
             print("Initialized iterative process variable: {}".format(
                 self.iterative_process.initialize.type_signature.formatted_representation()))
-    
-        # print("Step 6: Federated Training Rounds Begins...")
+
+        if self.client_count == None:
+            print("Training on complete client list... Do you want to continue (Y/N)")
+            input_from_user = input()
+            if input_from_user.upper() not in ['Y', 'YES']:
+                exit()
+        print("Step 6: Federated Training Rounds Begins...")
         
-        # if self.C < 0 or self.C > 1:
-        #     raise Exception("Value of C must be in range [0,1]")
+        if self.C < 0 or self.C > 1:
+            raise Exception("Value of C must be in range [0,1]")
         
-        # self.metric_capture = []
-        # # acc => actual client count
-        # self.acc = int(self.C * self.G)
-        # RANDOM_MUL, RANDOM_ADD = 17, 11
-        # for round_no in range(1, self.R):
-        #     random.seed(RANDOM_MUL * round_no + RANDOM_ADD)
-        #     client_final_list = random.sample(self.federated_train_data, self.acc)
-        #     result = self.iterative_process.next(self.train_state, client_final_list)
-        #     self.train_state = result.state
-        #     train_metrics = result.metrics
-        #     self.metric_capture.append(train_metrics)
-        #     print('round {:2d}, metrics={}'.format(round_no, train_metrics))
+        self.metric_capture = []
+        # acc => actual client count
+        self.acc = int(self.C * self.G)
+        RANDOM_MUL, RANDOM_ADD = 17, 11
+        for round_no in range(1, self.R):
+            random.seed(RANDOM_MUL * round_no + RANDOM_ADD)
+            client_final_list = random.sample(self.federated_train_data, self.acc)
+            result = self.iterative_process.next(self.train_state, client_final_list)
+            self.train_state = result.state
+            train_metrics = result.metrics
+            self.metric_capture.append(train_metrics)
+            print('round {:2d}, metrics={}'.format(round_no, train_metrics))
