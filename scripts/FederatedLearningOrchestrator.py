@@ -164,21 +164,21 @@ class FederatedLearningOrchestrator:
             self.train_state = self.iterative_process.initialize()
             print("Initialized iterative process variable: {}".format(
                 self.iterative_process.initialize.type_signature.formatted_representation()))
-            
-        print("Step 6: Federated Training Rounds Begins...")
+    
+        # print("Step 6: Federated Training Rounds Begins...")
         
-        if self.C < 0 or self.C > 1:
-            raise Exception("Value of C must be in range [0,1]")
+        # if self.C < 0 or self.C > 1:
+        #     raise Exception("Value of C must be in range [0,1]")
         
-        self.metric_capture = []
-        # acc => actual client count
-        self.acc = int(self.C * self.G)
-        RANDOM_MUL, RANDOM_ADD = 17, 11
-        for round_no in range(1, self.R):
-            random.seed(RANDOM_MUL * round_no + RANDOM_ADD)
-            client_final_list = random.sample(self.federated_train_data, self.acc)
-            result = self.iterative_process.next(self.train_state, client_final_list)
-            self.train_state = result.state
-            train_metrics = result.metrics
-            self.metric_capture.append(train_metrics)
-            print('round {:2d}, metrics={}'.format(round_no, train_metrics))
+        # self.metric_capture = []
+        # # acc => actual client count
+        # self.acc = int(self.C * self.G)
+        # RANDOM_MUL, RANDOM_ADD = 17, 11
+        # for round_no in range(1, self.R):
+        #     random.seed(RANDOM_MUL * round_no + RANDOM_ADD)
+        #     client_final_list = random.sample(self.federated_train_data, self.acc)
+        #     result = self.iterative_process.next(self.train_state, client_final_list)
+        #     self.train_state = result.state
+        #     train_metrics = result.metrics
+        #     self.metric_capture.append(train_metrics)
+        #     print('round {:2d}, metrics={}'.format(round_no, train_metrics))
