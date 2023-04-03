@@ -5,6 +5,7 @@ import numpy as np
 import tensorflow as tf
 from tqdm import tqdm
 import random
+from sys import exit
 
 class FederatedLearningOrchestrator:
     '''
