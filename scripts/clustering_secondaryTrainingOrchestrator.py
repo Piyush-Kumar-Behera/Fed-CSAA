@@ -18,7 +18,7 @@ def client_update(model, dataset, client_optimizer):
     for batch in dataset:
         with tf.GradientTape() as tape:
             # Compute a forward pass on the batch of data
-            outputs = model.forward_pass(batch)
+            outputs = model(batch)
 
         # Compute the corresponding gradient
         grads = tape.gradient(outputs.loss, client_weights)
