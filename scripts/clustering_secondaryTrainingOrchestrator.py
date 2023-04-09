@@ -8,7 +8,6 @@ import random
 from sys import exit
 import copy
 
-@tf.function
 def client_update(model, dataset, client_optimizer, client_loss):
     """Performs training (using the server model weights) on the client's dataset."""
     model.compile(optimizer=client_optimizer, loss=client_loss)
