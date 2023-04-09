@@ -209,4 +209,5 @@ class ClusteringPrimaryTraining:
             server_state = self.federated_algorithm.next(server_state, 
                                                          self.federated_train_data)
             
-        return server_state
+        updated_wts = copy.deepcopy(server_state)
+        return updated_wts
