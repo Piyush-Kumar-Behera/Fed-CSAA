@@ -25,7 +25,7 @@ def create_iterative_process(federated_train_data):
         
     def model_fn():
         keras_model = create_keras_model()
-        return tff.learning.models.from_keras_model(
+        return tff.learning.from_keras_model(
             keras_model,
             input_spec=federated_train_data[0].element_spec,
             loss=tf.keras.losses.SparseCategoricalCrossentropy(),
@@ -179,7 +179,7 @@ class ClusteringPrimaryTraining:
         tff.federated_computation(lambda: "Hello from tff!")
 
         print("Step 2: Downloading dataset...")
-        if self.dataset is "emnist":
+        if self.dataset == "emnist":
             data_train, data_test = tff.simulation.datasets.emnist.load_data()
             self.data_train = data_train
             self.data_test = data_test
