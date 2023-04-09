@@ -9,24 +9,11 @@ from sys import exit
 import copy
 
 @tf.function
-def client_update(model, dataset, client_optimizer):
+def client_update(model, dataset, client_optimizer, client_loss):
     """Performs training (using the server model weights) on the client's dataset."""
-    # Initialize the client model with the current server weights.
+    model.compile(optimizer=client_optimizer, loss=client_loss)
+    model.fit(dataset)
     client_weights = model.trainable_variables
-
-    # Use the client_optimizer to update the local model.
-    for batch in dataset:
-        with tf.GradientTape() as tape:
-            # Compute a forward pass on the batch of data
-            outputs = model(batch)
-
-        # Compute the corresponding gradient
-        grads = tape.gradient(outputs.loss, client_weights)
-        grads_and_vars = zip(grads, client_weights)
-
-        # Apply the gradient using a client optimizer.
-        client_optimizer.apply_gradients(grads_and_vars)
-
     return client_weights
 
 class ClusteringSecondaryTraining:
@@ -139,7 +126,8 @@ class ClusteringSecondaryTraining:
         for client_data in tqdm(self.federated_train_data):
             temp_model = self.create_half_frozen_keras_model(primary_wts)
             client_optimizer = tf.keras.optimizers.SGD(learning_rate=0.01)
-            new_updates = client_update(temp_model, client_data, client_optimizer=client_optimizer)
+            client_loss = tf.keras.losses.SparseCategoricalCrossentropy()
+            new_updates = client_update(temp_model, client_data, client_optimizer, client_loss)
             self.client_label_incl.append(new_updates)
         print(self.client_label_incl[0])
         
