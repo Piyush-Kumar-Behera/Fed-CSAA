@@ -128,6 +128,14 @@ class ClusteringSecondaryTraining:
             client_loss = tf.keras.losses.SparseCategoricalCrossentropy()
             new_updates = client_update(temp_model, client_data, client_optimizer, client_loss)
             self.client_label_incl.append(new_updates)
-        print(self.client_label_incl[0])
+        print("Successfully fetched the last layer parameters...")
         
-        return self.client_label_incl
+        self.client_label_incl_numpy = []
+        for cli in self.client_label_incl:
+            cli1 = cli[0].numpy()
+            cli2 = cli[1].numpy().reshape(-1, cli1.shape[1])
+            new_cli = np.append(cli1, cli2, axis=0)
+            final_cli = new_cli.flatten()    
+            self.client_label_incl_numpy.append(final_cli)
+            
+        return self.client_label_incl_numpy
