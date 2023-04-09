@@ -62,12 +62,12 @@ def create_iterative_process(federated_train_data):
                 # Compute a forward pass on the batch of data
                 outputs = model.forward_pass(batch)
 
-        # Compute the corresponding gradient
-        grads = tape.gradient(outputs.loss, client_weights)
-        grads_and_vars = zip(grads, client_weights)
+            # Compute the corresponding gradient
+            grads = tape.gradient(outputs.loss, client_weights)
+            grads_and_vars = zip(grads, client_weights)
 
-        # Apply the gradient using a client optimizer.
-        client_optimizer.apply_gradients(grads_and_vars)
+            # Apply the gradient using a client optimizer.
+            client_optimizer.apply_gradients(grads_and_vars)
 
         return client_weights
     
