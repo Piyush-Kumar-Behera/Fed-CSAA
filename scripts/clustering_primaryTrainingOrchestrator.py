@@ -205,7 +205,7 @@ class ClusteringPrimaryTraining:
         server_state = self.federated_algorithm.initialize()
 
         print("Step 7: Starting federated training rounds...")
-        for round in self.R:
+        for round in range(self.R):
             server_state = self.federated_algorithm.next(server_state, 
                                                          self.federated_train_data)
             
