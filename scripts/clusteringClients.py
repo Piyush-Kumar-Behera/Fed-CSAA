@@ -10,13 +10,13 @@ class ClusterClients:
         self.clusters = []
         self.cluster_count = 0
 
-    def clusterClients(self, vec_lbl_incl, client_set, no_of_cluster,
+    def clusterClientsMethod(self, vec_lbl_incl, client_set, no_of_cluster,
                        clustering_algo = 'kmeans'):
         if clustering_algo != 'kmeans':
             raise Exception("Clustering algo not supported...")
         if len(vec_lbl_incl) != len(client_set):
             raise Exception("Invalid inputs...Client count not matching")
-        self.X = np.array()
+        self.X = np.array(vec_lbl_incl)
         self.cluster_count = no_of_cluster
         self.kmeans_obj = KMeans(n_clusters=no_of_cluster, init='k-means++', tol=1e-6)
         self.kmeans_obj.fit(self.X)
