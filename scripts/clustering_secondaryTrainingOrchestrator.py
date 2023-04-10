@@ -138,4 +138,4 @@ class ClusteringSecondaryTraining:
             final_cli = new_cli.flatten()    
             self.client_label_incl_numpy.append(final_cli)
             
-        return self.client_label_incl_numpy
+        return self.client_label_incl_numpy, self.client_set
