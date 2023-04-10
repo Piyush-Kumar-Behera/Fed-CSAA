@@ -1,5 +1,6 @@
 import numpy as np
 from sklearn.cluster import KMeans
+from tqdm import tqdm
 
 class ClusterClients:
     '''
@@ -23,7 +24,7 @@ class ClusterClients:
         self.labels = self.kmeans_obj.labels_
 
         self.client_dict = {}
-        for i in range(range(len(client_set))):
+        for i in tqdm(range(len(client_set))):
             if self.labels[i] not in self.client_dict.keys():
                 self.client_dict[self.labels[i]] = []
             self.client_dict[self.labels[i]].append(client_set[i])
