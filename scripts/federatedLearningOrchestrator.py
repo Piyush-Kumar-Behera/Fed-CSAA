@@ -197,3 +197,23 @@ class FederatedLearningOrchestrator:
             train_metrics = result.metrics
             self.metric_capture.append(train_metrics)
             print('round {:2d}, metrics={}'.format(round_no, train_metrics))
+
+    def evaluate_trained_model(self):
+        print("In evaluation...Evaluation must be executed only after orchestrate is" + \
+               "successfully executed...")
+
+        self.federated_test_data = self.make_federated_data(self.data_test, 
+                                                            self.grouped_clients)
+        self.evaluation_process = tff.learning.algorithms.build_fed_eval(
+            model_fn = FederatedLearningOrchestrator.model_keras_dnn_mnist_simple)
+        self.evaluation_state = self.evaluation_process.initialize()
+        self.model_wts_eval = self.iterative_process.get_model_weights(self.train_state)
+        self.evaluation_state = self.evaluation_process.set_model_weights(self.evaluation_state, 
+                                                                        self.model_wts_eval)
+        
+        self.evaluation_output = self.evaluation_process.next(self.evaluation_state,
+                                                              self.federated_test_data)
+        
+        print("Metrics: {}".format(str(self.evaluation_output.metrics)))
+
+        return self.evaluation_output.metrics
