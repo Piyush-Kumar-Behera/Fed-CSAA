@@ -88,7 +88,7 @@ class FederatedLearningOrchestrator:
     @staticmethod
     def model_keras_dnn_mnist_simple():
         keras_model = FederatedLearningOrchestrator.create_keras_dnn_mnist_simple()
-        return tff.learning.from_keras_model(
+        return tff.learning.models.from_keras_model(
             keras_model,
             input_spec=FederatedLearningOrchestrator.dataset_element_spec,
             loss=tf.keras.losses.SparseCategoricalCrossentropy(),

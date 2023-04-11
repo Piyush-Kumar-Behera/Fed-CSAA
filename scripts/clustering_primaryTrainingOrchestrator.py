@@ -25,7 +25,7 @@ def create_iterative_process(federated_train_data):
         
     def model_fn():
         keras_model = create_keras_model()
-        return tff.learning.from_keras_model(
+        return tff.learning.models.from_keras_model(
             keras_model,
             input_spec=federated_train_data[0].element_spec,
             loss=tf.keras.losses.SparseCategoricalCrossentropy(),
