@@ -92,7 +92,7 @@ class FederatedLearningOrchestrator:
             keras_model,
             input_spec=FederatedLearningOrchestrator.dataset_element_spec,
             loss=tf.keras.losses.SparseCategoricalCrossentropy(),
-            metrics=[tf.keras.metrics.SparseCategoricalCrossentropy()])
+            metrics=[tf.keras.metrics.SparseCategoricalAccuracy()])
 
     def make_federated_data(self, data, client_ids):
         return [
