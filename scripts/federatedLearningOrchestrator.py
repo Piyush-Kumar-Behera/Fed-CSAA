@@ -179,7 +179,7 @@ class FederatedLearningOrchestrator:
             print("Training on complete client list... Do you want to continue (Y/N)")
             input_from_user = input()
             if input_from_user.upper() not in ['Y', 'YES']:
-                exit()
+                return None
         print("Step 6: Federated Training Rounds Begins...")
         
         if self.C < 0 or self.C > 1:
