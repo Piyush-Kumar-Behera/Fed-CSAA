@@ -175,7 +175,7 @@ class FederatedLearningOrchestrator:
             print("Initialized iterative process variable: {}".format(
                 self.iterative_process.initialize.type_signature.formatted_representation()))
 
-        if self.client_count == None:
+        if self.client_count == None and not self.is_G_intialized:
             print("Training on complete client list... Do you want to continue (Y/N)")
             input_from_user = input()
             if input_from_user.upper() not in ['Y', 'YES']:
