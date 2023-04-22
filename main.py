@@ -63,7 +63,7 @@ if __name__ == "__main__":
             federated_object.modelDetailsSetter()
             federated_object.orchestrate()
             with open(OUTPUT_FILE_PATH, "wb") as fp:
-                pickle.dump(federated_object.test_metrics_list_during_training)
+                pickle.dump(federated_object.test_metrics_list_during_training, fp)
     else:
         OUTPUT_FILE_PATH = os.path.join(OUTPUT_FOLDER_PATH, "{}-without-clustering".format(testingName))
         fed_client_proportion = args["federatedLearning"]["client_proportion"]
@@ -76,7 +76,7 @@ if __name__ == "__main__":
         federated_object.clientCountSetter(client_count=clientPoolCount)
         federated_object.orchestrate()
         with open(OUTPUT_FILE_PATH, "wb") as fp:
-            pickle.dump(federated_object.test_metrics_list_during_training)
+            pickle.dump(federated_object.test_metrics_list_during_training, fp)
 
     # Testing
     print(federated_object.test_metrics_list_during_training)
