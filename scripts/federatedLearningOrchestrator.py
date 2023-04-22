@@ -197,6 +197,8 @@ class FederatedLearningOrchestrator:
             train_metrics = result.metrics
             self.metric_capture.append(train_metrics)
             print('round {:2d}, metrics={}'.format(round_no, train_metrics))
+            print("Evaluating on test-data...")
+            self.model_accuracy_on_test_data = self.evaluate_trained_model()
 
     def evaluate_trained_model(self):
         print("In evaluation...Evaluation must be executed only after orchestrate is" + \
