@@ -3,9 +3,12 @@ from scripts.clustering_primaryTrainingOrchestrator import *
 from scripts.clustering_secondaryTrainingOrchestrator import *
 from scripts.clusteringClients import ClusterClients
 from scripts.federatedLearningOrchestrator import FederatedLearningOrchestrator
+import pickle
+import os
 
 if __name__ == "__main__":
     JSON_FILE_PATH = "config_files/test_env.json"
+    OUTPUT_FOLDER_PATH = "output_files/"
     args = None
     with open(JSON_FILE_PATH, 'r') as jsonfile:
         args = json.load(jsonfile)
@@ -13,6 +16,7 @@ if __name__ == "__main__":
     print("Arguments received from test_env.json: {}".format(args))
     
     clientPoolCount = args["clientPoolCount"]
+    testingName = args["name"]
     if args.get("useFedCSAA"):
         pt_epochs = args["primary_training"]["epochs"]
         pt_batch_size = args["primary_training"]["batch_size"]
@@ -46,6 +50,7 @@ if __name__ == "__main__":
         print("Clustered Clients: {}".format(clustered_clients))
 
         for cluster_idx in range(len(clustered_clients)):
+            OUTPUT_FILE_PATH = os.path.join(OUTPUT_FOLDER_PATH, "{}-cluster-{}".format(testingName, cluster_idx))
             fed_client_proportion = args["federatedLearning"]["client_proportion"]
             fed_epochs =  args["federatedLearning"]["epochs"]
             fed_batch_size =  args["federatedLearning"]["batch_size"]
@@ -57,7 +62,10 @@ if __name__ == "__main__":
                                             client_group_idx_count, client_group_idx)
             federated_object.modelDetailsSetter()
             federated_object.orchestrate()
+            with open(OUTPUT_FILE_PATH, "wb") as fp:
+                pickle.dump(federated_object.test_metrics_list_during_training)
     else:
+        OUTPUT_FILE_PATH = os.path.join(OUTPUT_FOLDER_PATH, "{}-without-clustering".format(testingName))
         fed_client_proportion = args["federatedLearning"]["client_proportion"]
         fed_epochs =  args["federatedLearning"]["epochs"]
         fed_batch_size =  args["federatedLearning"]["batch_size"]
@@ -67,6 +75,8 @@ if __name__ == "__main__":
         federated_object.modelDetailsSetter()
         federated_object.clientCountSetter(client_count=clientPoolCount)
         federated_object.orchestrate()
+        with open(OUTPUT_FILE_PATH, "wb") as fp:
+            pickle.dump(federated_object.test_metrics_list_during_training)
 
     # Testing
     print(federated_object.test_metrics_list_during_training)
