@@ -56,7 +56,17 @@ if __name__ == "__main__":
             federated_object.scenarioSetter(fed_client_proportion, fed_epochs, fed_batch_size, fed_rounds, 
                                             client_group_idx_count, client_group_idx)
             federated_object.modelDetailsSetter()
-            final_round_metrics = federated_object.orchestrate()
-            print(final_round_metrics)
+            federated_object.orchestrate()
     else:
-        pass
+        fed_client_proportion = args["federatedLearning"]["client_proportion"]
+        fed_epochs =  args["federatedLearning"]["epochs"]
+        fed_batch_size =  args["federatedLearning"]["batch_size"]
+        fed_rounds =  args["federatedLearning"]["rounds"]
+        federated_object = FederatedLearningOrchestrator()
+        federated_object.scenarioSetter(fed_client_proportion, fed_epochs, fed_batch_size, fed_rounds)
+        federated_object.modelDetailsSetter()
+        federated_object.clientCountSetter(client_count=clientPoolCount)
+        federated_object.orchestrate()
+
+    # Testing
+    print(federated_object.test_metrics_list_during_training)

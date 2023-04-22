@@ -189,6 +189,7 @@ class FederatedLearningOrchestrator:
         # acc => actual client count
         self.acc = int(self.C * self.G)
         RANDOM_MUL, RANDOM_ADD = 17, 11
+        self.test_metrics_list_during_training = []
         for round_no in range(1, self.R):
             random.seed(RANDOM_MUL * round_no + RANDOM_ADD)
             client_final_list = random.sample(self.federated_train_data, self.acc)
@@ -199,6 +200,8 @@ class FederatedLearningOrchestrator:
             print('round {:2d}, metrics={}'.format(round_no, train_metrics))
             print("Evaluating on test-data...")
             self.model_accuracy_on_test_data = self.evaluate_trained_model()
+            self.sca_test_data = self.model_accuracy_on_test_data['client_work']['eval']['current_round_metrics']['sparse_categorical_accuracy']
+            self.test_metrics_list_during_training.append(self.sca_test_data)
 
     def evaluate_trained_model(self):
         print("In evaluation...Evaluation must be executed only after orchestrate is" + \
