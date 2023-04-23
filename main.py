@@ -5,9 +5,20 @@ from scripts.clusteringClients import ClusterClients
 from scripts.federatedLearningOrchestrator import FederatedLearningOrchestrator
 import pickle
 import os
+import argparse
 
 if __name__ == "__main__":
-    JSON_FILE_PATH = "config_files/test_env.json"
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-p', '--param')
+    parser_args = parser.parse_args()
+    param_file_path = parser_args.param
+
+    if param_file_path is None:
+        param_file_path = "test_env.json"
+    
+    JSON_FILE_PATH = "config_files/{}".format(param_file_path)
+    print("looking for params in {}".format(JSON_FILE_PATH))
+
     OUTPUT_FOLDER_PATH = "output_files/"
     args = None
     with open(JSON_FILE_PATH, 'r') as jsonfile:
