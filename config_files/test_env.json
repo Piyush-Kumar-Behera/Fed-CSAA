@@ -1,11 +1,11 @@
 {
-    "name": "testing-0001",
+    "name": "run-0001",
     "useFedCSAA": true,
-    "clientPoolCount": 10,
+    "clientPoolCount": 100,
     "primary_training": {
-        "epochs": 2,
+        "epochs": 3,
         "batch_size": 20,
-        "rounds": 2
+        "rounds": 10
     },   
     "secondary_training": {
         "epochs": 2,
@@ -19,6 +19,6 @@
         "client_proportion": 0.8,
         "epochs": 2,
         "batch_size": 20,
-        "rounds": 10
+        "rounds": 200
     }
 }
