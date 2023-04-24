@@ -7,6 +7,7 @@ from tqdm import tqdm
 import random
 from sys import exit
 import copy
+from scripts.label_swap_funtions import *
 
 def client_update(model, dataset, client_optimizer, client_loss):
     """Performs training (using the server model weights) on the client's dataset."""
@@ -62,15 +63,26 @@ class ClusteringSecondaryTraining:
         return dataset.repeat(self.E).shuffle(self.shuffle_buffer, seed=1).batch(
             self.B).map(batch_format_fn).prefetch(self.prefetch_buffer)
 
-    def make_federated_data(self, client_set, data_split = "train"):
-        if data_split == "train":
-            data = self.data_train
-        else:
-            data = self.data_test
+    def make_federated_data(self, data, client_ids):
+        res = []
+        num_group = 4
+        approx_client_per_group = int(len(client_ids)/num_group)
+        groups = []
+        groups.append(client_ids[:approx_client_per_group])
+        groups.append(client_ids[approx_client_per_group:2*approx_client_per_group])
+        groups.append(client_ids[2*approx_client_per_group:3*approx_client_per_group])
+        groups.append(client_ids[3*approx_client_per_group:])
 
-        self.federated_train_data = [
-            self.preprocess(data.create_tf_dataset_for_client(x))
-            for x in client_set]
+        label_swap_groups = [[5, 6], [3, 8], [0, 9], [1, 7]]
+        for idx in range(4):
+            client_group = groups[idx]
+            label_swap_group = label_swap_groups[idx]
+            for client in client_group:
+                inter_data = data.create_tf_dataset_for_client(client)
+                final_data = convert_label_swap_dataset(inter_data, a=label_swap_group[0], b=label_swap_group[1])
+                res.append(self.preprocess(final_data))
+            
+        return res
     
     def create_keras_model(self):
         initializer = tf.keras.initializers.GlorotNormal(seed=0)
@@ -118,7 +130,8 @@ class ClusteringSecondaryTraining:
         self.client_set = random.sample(self.client_ids_list, self.client_count)
 
         print("Step 3: Creating Federated Learning Ready Data...")    
-        self.make_federated_data(self.client_set, "train")
+        # self.make_federated_data(self.client_set, "train")
+        self.federated_train_data = self.make_federated_data(self.data_train, self.client_set)
 
         print("Step 4: Fetching last layer learnings for clients")
         self.client_label_incl = []

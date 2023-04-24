@@ -6,6 +6,7 @@ import tensorflow as tf
 from tqdm import tqdm
 import random
 from sys import exit
+from scripts.label_swap_funtions import *
 
 class FederatedLearningOrchestrator:
     '''
@@ -95,12 +96,26 @@ class FederatedLearningOrchestrator:
             metrics=[tf.keras.metrics.SparseCategoricalAccuracy()])
 
     def make_federated_data(self, data, client_ids):
-        return [
-            self.preprocess_federated_datasets(data
-                        .create_tf_dataset_for_client(client), self.op_type)
-            for client in client_ids
-        ]
+        res = []
+        num_group = 4
+        approx_client_per_group = int(len(client_ids)/num_group)
+        groups = []
+        groups.append(client_ids[:approx_client_per_group])
+        groups.append(client_ids[approx_client_per_group:2*approx_client_per_group])
+        groups.append(client_ids[2*approx_client_per_group:3*approx_client_per_group])
+        groups.append(client_ids[3*approx_client_per_group:])
 
+        label_swap_groups = [[5, 6], [3, 8], [0, 9], [1, 7]]
+        for idx in range(4):
+            client_group = groups[idx]
+            label_swap_group = label_swap_groups[idx]
+            for client in client_group:
+                inter_data = data.create_tf_dataset_for_client(client)
+                final_data = convert_label_swap_dataset(inter_data, a=label_swap_group[0], b=label_swap_group[1])
+                res.append(self.preprocess_federated_datasets(final_data))
+            
+        return res
+    
     def preprocess_federated_datasets(self, dataset, type="flatten"):
         def batch_format_flatten_fn_for_emnist(element):
             '''
