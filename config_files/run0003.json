@@ -1,0 +1,24 @@
+{
+    "name": "run-0003",
+    "useFedCSAA": true,
+    "clientPoolCount": 100,
+    "primary_training": {
+        "epochs": 3,
+        "batch_size": 20,
+        "rounds": 10
+    },   
+    "secondary_training": {
+        "epochs": 10,
+        "batch_size": 20,
+        "rounds": 1
+    },
+    "clustering": {
+        "clusterCount": 4
+    },
+    "federatedLearning": {
+        "client_proportion": 0.8,
+        "epochs": 2,
+        "batch_size": 20,
+        "rounds": 200
+    }
+}
