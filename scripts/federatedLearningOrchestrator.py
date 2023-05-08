@@ -257,15 +257,22 @@ class FederatedLearningOrchestrator:
             self.metric_capture.append(train_metrics)
             print('round {:2d}, metrics={}'.format(round_no, train_metrics))
             print("Evaluating on test-data...")
-            self.model_accuracy_on_test_data = self.evaluate_trained_model()
+            self.model_accuracy_on_test_data = self.evaluate_trained_model(is_clustered_case, total_clients=total_clients)
             self.sca_test_data = self.model_accuracy_on_test_data['client_work']['eval']['current_round_metrics']['sparse_categorical_accuracy']
             self.test_metrics_list_during_training.append(self.sca_test_data)
 
-    def evaluate_trained_model(self):
+    def evaluate_trained_model(self, is_clustered_case = False, total_clients = 100):
         print("In evaluation...Evaluation must be executed only after orchestrate is" + \
                "successfully executed...")
-
-        self.federated_test_data = self.make_federated_data(self.data_test, 
+        if is_clustered_case:
+            print("Seed = 42")
+            self.client_init_seed_2 = 42
+            random.seed(self.client_init_seed_2)
+            self.client_group_in_cluster_case = random.sample(self.data_train.client_ids, total_clients)
+            self.federated_test_data = self.make_federated_data_for_cluster(self.data_test,
+                                                        self.client_group_in_cluster_case, self.grouped_clients)
+        else:    
+            self.federated_test_data = self.make_federated_data(self.data_test, 
                                                             self.grouped_clients)
         self.evaluation_process = tff.learning.algorithms.build_fed_eval(
             model_fn = FederatedLearningOrchestrator.model_keras_dnn_mnist_simple)
