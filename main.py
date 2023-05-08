@@ -72,7 +72,7 @@ if __name__ == "__main__":
             federated_object.scenarioSetter(fed_client_proportion, fed_epochs, fed_batch_size, fed_rounds, 
                                             client_group_idx_count, client_group_idx)
             federated_object.modelDetailsSetter()
-            federated_object.orchestrate()
+            federated_object.orchestrate(is_clustered_case=True, total_clients=clientPoolCount)
             with open(OUTPUT_FILE_PATH, "wb") as fp:
                 pickle.dump(federated_object.test_metrics_list_during_training, fp)
     else:

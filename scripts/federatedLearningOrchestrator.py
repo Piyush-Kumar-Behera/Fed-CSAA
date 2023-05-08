@@ -95,6 +95,40 @@ class FederatedLearningOrchestrator:
             loss=tf.keras.losses.SparseCategoricalCrossentropy(),
             metrics=[tf.keras.metrics.SparseCategoricalAccuracy()])
 
+    def make_federated_data_for_cluster(self, data, client_ids, cluster_clients):
+        res = []
+        num_group = 4
+        approx_client_per_group = int(len(client_ids)/num_group)
+        groups = []
+        groups.append(client_ids[:approx_client_per_group])
+        groups.append(client_ids[approx_client_per_group:2*approx_client_per_group])
+        groups.append(client_ids[2*approx_client_per_group:3*approx_client_per_group])
+        groups.append(client_ids[3*approx_client_per_group:])
+        print(groups)
+        label_swap_groups = [[(5, 6), (4, 9), (2, 5)], [(3, 8), (1, 4), (0, 8)], [(0, 9), (3, 6), (5, 7)], 
+                             [(1, 7), (2, 4), (0, 6)]]
+        for idx in range(4):
+            client_group = groups[idx]
+            label_swap_group = label_swap_groups[idx]
+            for client in client_group:
+                inter_data = data.create_tf_dataset_for_client(client)
+                final_data = convert_label_swap_dataset_list(inter_data, list_exchange=label_swap_group)
+                res.append(self.preprocess_federated_datasets(final_data))
+
+        res_dictionary = {}
+        for idx in range(len(client_ids)):
+            client_id_name = client_ids[idx]
+            res_data = res[idx]
+            res_dictionary[client_id_name] = res_data
+
+        final_res = []
+
+        for client_id_cluster in cluster_clients:
+            final_res.append(res_dictionary[client_id_cluster])
+
+        return final_res
+
+
     def make_federated_data(self, data, client_ids):
         res = []
         num_group = 4
@@ -139,7 +173,7 @@ class FederatedLearningOrchestrator:
                             .format(self.dataset_name, type))
 
             
-    def orchestrate(self):
+    def orchestrate(self, is_clustered_case = False, total_clients = 100):
         print("Step 1: Initalizing the environment...")
         nest_asyncio.apply()
         np.random.seed(0)
@@ -176,7 +210,15 @@ class FederatedLearningOrchestrator:
             self.G = len(self.grouped_clients)
 
         print("Step 4: Creating Federated train data...")
-        self.federated_train_data = self.make_federated_data(self.data_train, 
+        if is_clustered_case:
+            print("Seed = 42")
+            self.client_init_seed_2 = 42
+            random.seed(self.client_init_seed_2)
+            self.client_group_in_cluster_case = random.sample(self.data_train.client_ids, total_clients) 
+            self.federated_train_data = self.make_federated_data_for_cluster(self.data_train,
+                                                        self.client_group_in_cluster_case, self.grouped_clients)
+        else:    
+            self.federated_train_data = self.make_federated_data(self.data_train, 
                                                         self.grouped_clients)
         FederatedLearningOrchestrator.dataset_element_spec = \
                                     self.federated_train_data[0].element_spec
