@@ -105,8 +105,7 @@ class FederatedLearningOrchestrator:
         groups.append(client_ids[2*approx_client_per_group:3*approx_client_per_group])
         groups.append(client_ids[3*approx_client_per_group:])
         print(groups)
-        label_swap_groups = [[(5, 6), (4, 9), (2, 5)], [(3, 8), (1, 4), (0, 8)], [(0, 9), (3, 6), (5, 7)], 
-                             [(1, 7), (2, 4), (0, 6)]]
+        label_swap_groups = [[(5, 6), (4, 9)], [(3, 8), (1, 4)], [(0, 9), (3, 6)], [(1, 7), (2, 4)]]
         for idx in range(4):
             client_group = groups[idx]
             label_swap_group = label_swap_groups[idx]
@@ -139,8 +138,7 @@ class FederatedLearningOrchestrator:
         groups.append(client_ids[2*approx_client_per_group:3*approx_client_per_group])
         groups.append(client_ids[3*approx_client_per_group:])
         print(groups)
-        label_swap_groups = [[(5, 6), (4, 9), (2, 5)], [(3, 8), (1, 4), (0, 8)], [(0, 9), (3, 6), (5, 7)], 
-                             [(1, 7), (2, 4), (0, 6)]]
+        label_swap_groups = [[(5, 6), (4, 9)], [(3, 8), (1, 4)], [(0, 9), (3, 6)], [(1, 7), (2, 4)]]
         for idx in range(4):
             client_group = groups[idx]
             label_swap_group = label_swap_groups[idx]
