@@ -81,10 +81,16 @@ class FederatedLearningOrchestrator:
     @staticmethod
     def create_keras_dnn_mnist_simple():
         return tf.keras.models.Sequential([
-            tf.keras.layers.InputLayer(input_shape=(3072,)),
-            tf.keras.layers.Dense(1000, activation='relu'),
-            tf.keras.layers.Dense(20, kernel_initializer='zeros'),
-            tf.keras.layers.Softmax()])
+            tf.keras.layers.Input(shape=(32, 32, 3)),
+            tf.keras.layers.Conv2D(filters=6, kernel_size=(5,5), activation='relu', kernel_initializer=initializer),
+            tf.keras.layers.AveragePooling2D(pool_size=(2,2), strides=(2,2)),
+            tf.keras.layers.Conv2D(filters=16, kernel_size=(5,5), activation='relu', kernel_initializer=initializer),
+            tf.keras.layers.AveragePooling2D(pool_size=(2,2), strides=(2,2)),
+            tf.keras.layers.Conv2D(filters=60, kernel_size=(3,3), activation='relu', kernel_initializer=initializer),
+            tf.keras.layers.Flatten(),
+            tf.keras.layers.Dense(84, kernel_initializer=initializer, activation  = 'relu'),
+            tf.keras.layers.Dense(20, kernel_initializer=initializer, activation = 'softmax')
+        ])
     
     @staticmethod
     def model_keras_dnn_mnist_simple():
@@ -108,7 +114,7 @@ class FederatedLearningOrchestrator:
                 Flatten a batch of pixels and return the features as an OrderedDict
             '''
             return collections.OrderedDict(
-                x=tf.reshape(element['image'], [-1, 3072]),
+                x=tf.reshape(element['image'], [-1, 32, 32, 3]),
                 y=tf.reshape(element['coarse_label'], [-1,1]))
 
         if self.dataset_name == "emnist":
