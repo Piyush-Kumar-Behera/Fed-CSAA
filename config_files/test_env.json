@@ -19,6 +19,6 @@
         "client_proportion": 0.8,
         "epochs": 2,
         "batch_size": 20,
-        "rounds": 20
+        "rounds": 200
     }
 }

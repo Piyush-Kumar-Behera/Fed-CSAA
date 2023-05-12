@@ -80,6 +80,7 @@ class FederatedLearningOrchestrator:
 
     @staticmethod
     def create_keras_dnn_mnist_simple():
+        initializer = tf.keras.initializers.GlorotNormal(seed=0)
         return tf.keras.models.Sequential([
             tf.keras.layers.Input(shape=(32, 32, 3)),
             tf.keras.layers.Conv2D(filters=6, kernel_size=(5,5), activation='relu', kernel_initializer=initializer),
