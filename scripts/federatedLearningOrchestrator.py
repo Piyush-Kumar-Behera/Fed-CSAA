@@ -81,8 +81,9 @@ class FederatedLearningOrchestrator:
     @staticmethod
     def create_keras_dnn_mnist_simple():
         return tf.keras.models.Sequential([
-            tf.keras.layers.InputLayer(input_shape=(784,)),
-            tf.keras.layers.Dense(10, kernel_initializer='zeros'),
+            tf.keras.layers.InputLayer(input_shape=(3072,)),
+            tf.keras.layers.Dense(1000, activation='relu'),
+            tf.keras.layers.Dense(20, kernel_initializer='zeros'),
             tf.keras.layers.Softmax()])
     
     @staticmethod
@@ -107,8 +108,8 @@ class FederatedLearningOrchestrator:
                 Flatten a batch of pixels and return the features as an OrderedDict
             '''
             return collections.OrderedDict(
-                x=tf.reshape(element['pixels'], [-1, 784]),
-                y=tf.reshape(element['label'], [-1,1]))
+                x=tf.reshape(element['image'], [-1, 3072]),
+                y=tf.reshape(element['coarse_label'], [-1,1]))
 
         if self.dataset_name == "emnist":
             if type == "flatten":
@@ -132,6 +133,10 @@ class FederatedLearningOrchestrator:
         print("Step 2: Downloading dataset...")
         if self.dataset is "emnist":
             data_train, data_test = tff.simulation.datasets.emnist.load_data()
+            self.data_train = data_train
+            self.data_test = data_test
+        elif self.dataset == "cifar":
+            data_train, data_test = tff.simulation.datasets.cifar100.load_data()
             self.data_train = data_train
             self.data_test = data_test
         else:

@@ -35,7 +35,7 @@ if __name__ == "__main__":
 
         print("Starting Primary Training for Clustering...")
         pt_clust_object = ClusteringPrimaryTraining()
-        pt_clust_object.scenarioSetter(pt_epochs, pt_batch_size, pt_rounds)
+        pt_clust_object.scenarioSetter(pt_epochs, pt_batch_size, pt_rounds, dataset="cifar")
         pt_clust_object.modelDetailsSetter()
         pt_clust_object.clientCountSetter(clientPoolCount)
         wts_after_pt = pt_clust_object.orchestrate()
@@ -47,7 +47,7 @@ if __name__ == "__main__":
 
         print("Starting Secondary Training for Clustering...")
         st_clust_object = ClusteringSecondaryTraining()
-        st_clust_object.scenarioSetter(st_epochs, st_batch_size, st_rounds)
+        st_clust_object.scenarioSetter(st_epochs, st_batch_size, st_rounds, dataset="cifar")
         st_clust_object.modelDetailsSetter()
         st_clust_object.clientCountSetter(clientPoolCount)
         lbl_inclination, client_set_st = st_clust_object.orchestrate(wts_after_pt)
@@ -70,7 +70,7 @@ if __name__ == "__main__":
             client_group_idx_count = len(client_group_idx)
             federated_object = FederatedLearningOrchestrator()
             federated_object.scenarioSetter(fed_client_proportion, fed_epochs, fed_batch_size, fed_rounds, 
-                                            client_group_idx_count, client_group_idx)
+                                            client_group_idx_count, client_group_idx, dataset="cifar")
             federated_object.modelDetailsSetter()
             federated_object.orchestrate()
             with open(OUTPUT_FILE_PATH, "wb") as fp:

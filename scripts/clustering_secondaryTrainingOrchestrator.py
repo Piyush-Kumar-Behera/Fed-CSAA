@@ -55,9 +55,9 @@ class ClusteringSecondaryTraining:
     def preprocess(self, dataset):
 
         def batch_format_fn(element):
-            """Returns dataset in shape (28, 28, 1)"""
-            return (tf.reshape(element['pixels'], [-1, 28, 28, 1]), 
-                    tf.reshape(element['label'], [-1, 1]))
+            """Returns dataset in shape (32, 32, 3)"""
+            return (tf.reshape(element['image'], [-1, 32, 32, 3]), 
+                    tf.reshape(element['coarse_label'], [-1, 1]))
 
         return dataset.repeat(self.E).shuffle(self.shuffle_buffer, seed=1).batch(
             self.B).map(batch_format_fn).prefetch(self.prefetch_buffer)
@@ -75,7 +75,7 @@ class ClusteringSecondaryTraining:
     def create_keras_model(self):
         initializer = tf.keras.initializers.GlorotNormal(seed=0)
         return tf.keras.models.Sequential([
-            tf.keras.layers.Input(shape=(28, 28, 1)),
+            tf.keras.layers.Input(shape=(32, 32, 3)),
             tf.keras.layers.Conv2D(filters=6, kernel_size=(5,5), activation='relu', kernel_initializer=initializer),
             tf.keras.layers.AveragePooling2D(pool_size=(2,2), strides=(2,2)),
             tf.keras.layers.Conv2D(filters=16, kernel_size=(5,5), activation='relu', kernel_initializer=initializer),
@@ -83,7 +83,7 @@ class ClusteringSecondaryTraining:
             tf.keras.layers.Conv2D(filters=60, kernel_size=(3,3), activation='relu', kernel_initializer=initializer),
             tf.keras.layers.Flatten(),
             tf.keras.layers.Dense(84, kernel_initializer=initializer, activation  = 'relu'),
-            tf.keras.layers.Dense(10, kernel_initializer=initializer, activation = 'softmax')
+            tf.keras.layers.Dense(20, kernel_initializer=initializer, activation = 'softmax')
         ])
 
     def create_half_frozen_keras_model(self, updated_weights):
@@ -103,6 +103,10 @@ class ClusteringSecondaryTraining:
         print("Step 1: Downloading dataset...")
         if self.dataset == "emnist":
             data_train, data_test = tff.simulation.datasets.emnist.load_data()
+            self.data_train = data_train
+            self.data_test = data_test
+        elif self.dataset == "cifar":
+            data_train, data_test = tff.simulation.datasets.cifar100.load_data()
             self.data_train = data_train
             self.data_test = data_test
         else:
