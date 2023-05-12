@@ -117,7 +117,7 @@ class FederatedLearningOrchestrator:
                 x=tf.reshape(element['image'], [-1, 32, 32, 3]),
                 y=tf.reshape(element['coarse_label'], [-1,1]))
 
-        if self.dataset_name == "emnist":
+        if self.dataset_name == "emnist" or self.dataset_name == "cifar":
             if type == "flatten":
                 return dataset.repeat(self.E).shuffle(self.shuffle_buffer, seed=1).batch(
                     self.B).map(batch_format_flatten_fn_for_emnist).prefetch(self.prefetch_buffer)
